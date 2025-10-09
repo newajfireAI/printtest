@@ -1,0 +1,125 @@
+{
+  "orders": [
+    {
+      "order_id": "ORD-1001",
+      "customer": {
+        "id": 1,
+        "name": "Samiul Hasan",
+        "phone": "+8801888000001",
+        "email": "samiul@example.com",
+        "address": "House 12, Road 5, Mirpur, Dhaka"
+      },
+      "restaurant": {
+        "id": 1,
+        "name": "Spicy Grill",
+        "address": "123 Main Street, Dhaka",
+        "phone": "+8801777000001"
+      },
+      "items": [
+        {
+          "item_id": 1001,
+          "name": "Cheese Burger",
+          "quantity": 2,
+          "unit_price": 250,
+          "total": 500
+        },
+        {
+          "item_id": 1003,
+          "name": "Coca Cola",
+          "quantity": 2,
+          "unit_price": 50,
+          "total": 100
+        }
+      ],
+      "subtotal": 600,
+      "delivery_fee": 50,
+      "total_price": 650,
+      "payment_method": "Cash on Delivery",
+      "order_status": "Delivered",
+      "ordered_at": "2025-10-09T13:25:00Z",
+      "delivered_at": "2025-10-09T14:00:00Z",
+      "delivery_person": {
+        "id": 501,
+        "name": "Rakib Uddin",
+        "phone": "+8801999000001"
+      }
+    },
+    {
+      "order_id": "ORD-1002",
+      "customer": {
+        "id": 2,
+        "name": "Nusrat Jahan",
+        "phone": "+8801888000002",
+        "email": "nusrat@example.com",
+        "address": "House 22, Road 3, Agrabad, Chattogram"
+      },
+      "restaurant": {
+        "id": 2,
+        "name": "Pizza Planet",
+        "address": "456 Park Avenue, Chattogram",
+        "phone": "+8801777000002"
+      },
+      "items": [
+        {
+          "item_id": 2002,
+          "name": "Pepperoni Pizza",
+          "quantity": 1,
+          "unit_price": 650,
+          "total": 650
+        }
+      ],
+      "subtotal": 650,
+      "delivery_fee": 60,
+      "total_price": 710,
+      "payment_method": "Online Payment",
+      "order_status": "On the Way",
+      "ordered_at": "2025-10-09T14:10:00Z",
+      "delivered_at": null,
+      "delivery_person": {
+        "id": 502,
+        "name": "Jahidul Islam",
+        "phone": "+8801999000002"
+      }
+    },
+    {
+      "order_id": "ORD-1003",
+      "customer": {
+        "id": 3,
+        "name": "Tanvir Ahmed",
+        "phone": "+8801999111222",
+        "email": "tanvir@example.com",
+        "address": "Flat 4B, Banani, Dhaka"
+      },
+      "restaurant": {
+        "id": 3,
+        "name": "Healthy Bites",
+        "address": "78 Green Road, Dhaka",
+        "phone": "+8801888555555"
+      },
+      "items": [
+        {
+          "item_id": 3001,
+          "name": "Grilled Chicken Salad",
+          "quantity": 1,
+          "unit_price": 400,
+          "total": 400
+        },
+        {
+          "item_id": 3002,
+          "name": "Fresh Lemon Juice",
+          "quantity": 1,
+          "unit_price": 80,
+          "total": 80
+        }
+      ],
+      "subtotal": 480,
+      "delivery_fee": 40,
+      "total_price": 520,
+      "payment_method": "Bkash",
+      "order_status": "Pending",
+      "ordered_at": "2025-10-09T15:20:00Z",
+      "delivered_at": null,
+      "delivery_person": null
+    }
+  ]
+}

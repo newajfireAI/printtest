@@ -3,11 +3,13 @@ import './App.css'
 import { IoPrintOutline } from 'react-icons/io5'
 import { MdDownload } from 'react-icons/md'
 import { LuView } from 'react-icons/lu'
+import jsPDF from 'jspdf'
 
 function App() {
   const [orderdata, setOrderData] = useState([])
   const [hidden, setHidden] = useState(false)
   const clieckref = useRef(null)
+  const [orderDetails, setOrderDetails] = useState([])
 
   useEffect(() => {
     fetch('orders/orderDetials.json')
@@ -20,6 +22,41 @@ function App() {
       setHidden(false)
     }
   }
+
+  const henldeViewInvoice = (Id) => {
+    setHidden(true)
+    const OrderDatabyID = orderdata.find(id => id.order_id === Id)
+
+    setOrderDetails(OrderDatabyID);
+
+  }
+  const handleDownload = () => {
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a5",
+  });
+
+  let y = 15;
+  doc.setFontSize(14);
+  doc.text("🍽 Spicy Grill - Orders", 20, y);
+  y += 10;
+
+  orderdata.forEach(order => {
+    doc.setFontSize(11);
+    doc.text(`Order ID: ${order.order_id}`, 20, y); y += 5;
+    doc.text(`Customer: ${order.customer.name}`, 20, y); y += 5;
+    doc.text(`Phone: ${order.customer.phone}`, 20, y); y += 5;
+    doc.text(`Items: ${order.items.map(itm => itm.name).join(', ')}`, 20, y);
+    y += 5;
+    doc.text(`Total: ${order.total_price} ৳`, 20, y);
+    y += 10;
+  });
+
+  doc.save("orders-invoice.pdf");
+};
+
+
 
 
 
@@ -60,9 +97,9 @@ function App() {
                     ))}</td>
                     <td className='border p-2'>{order.total_price}</td>
                     <td className='border p-2'>{order.order_status}</td>
-                    <td className='border p-2'><button onClick={() => setHidden(true)} className='text-2xl text-center'><LuView /></button></td>
-                    <td className='border p-2'><button className='text-2xl text-center'><IoPrintOutline /></button></td>
-                    <td className='border p-2'><button className='text-2xl text-center'><MdDownload /></button></td>
+                    <td className='border p-2'><button onClick={() => henldeViewInvoice(order.order_id)} className='text-2xl text-center'><LuView /></button></td>
+                    <td className='border p-2'><button  className='text-2xl text-center'><IoPrintOutline /></button></td>
+                    <td className='border p-2'><button onClick={handleDownload} className='text-2xl text-center'><MdDownload /></button></td>
                   </tr>
                 )
               }
@@ -73,7 +110,7 @@ function App() {
         </section>
         <section onClick={hendleClickOutSite} className={`bg-gray-300/50 w-screen h-screen absolute top-0 ${!hidden && 'hidden'}`}>
 
-          <div ref={clieckref} className='w-[1748px] hidden-[2480px] bg-white shadow mx-auto flex justify-center items-center p-10 my-10'>
+          <div ref={clieckref} className='w-[80%] hidden-[2480px] bg-white shadow mx-auto flex justify-center items-center p-10 my-10'>
 
             {/*All Data  */}
             <div className='w-full'>
@@ -86,9 +123,9 @@ function App() {
                     <p className='text-xl font-semibold'>Phone:</p>
                   </div>
                   <div>
-                    <h2 className='text-2xl '>Resturent Name: </h2>
-                    <p className='text-xl '>Address:</p>
-                    <p className='text-xl '>Phone:</p>
+                    <h2 className='text-2xl '>{orderDetails?.restaurant?.name}</h2>
+                    <p className='text-xl '>{orderDetails?.restaurant?.address}</p>
+                    <p className='text-xl '>{orderDetails?.restaurant?.phone}</p>
                   </div>
                 </div>
                 <div className='text-left flex gap-3'>
@@ -99,20 +136,22 @@ function App() {
                     <p className='text-xl font-semibold'>Address:</p>
                   </div>
                   <div>
-                    <h2 className='text-2xl'>Customer Name: </h2>
-                    <p className='text-xl'>Phone:</p>
-                    <p className='text-xl'>Email:</p>
-                    <p className='text-xl'>Address:</p>
+                    <h2 className='text-2xl'>{orderDetails?.customer?.name}</h2>
+                    <p className='text-xl'>{orderDetails?.customer?.phone}</p>
+                    <p className='text-xl'>{orderDetails?.customer?.email}</p>
+                    <p className='text-xl'>{orderDetails?.customer?.address}</p>
                   </div>
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-center bg-green-500 inline-block px-2">Stuts:</h3>
+              <div className='flex flex-col'>
+                <h3 className="font-bold bg-green-500 inline-block px-2 w-fit">Stuts: {orderDetails.order_status}</h3>
+                <h3 className="font-bold px-2">Order ID: {orderDetails.order_id}</h3>
+              </div>
 
               <div>
-                
                 <table className='w-full mt-5'>
                   <thead>
-                    <tr className='bg-gray-300'>
+                    <tr className='bg-gray-300 border'>
                       <th className='w-[10%] py-2 border-white border-2'>item_id</th>
                       <th className='w-[40%] py-2 border-white border-2'>item name</th>
                       <th className='w-[10%] py-2 border-white border-2'>Quantity</th>
@@ -121,20 +160,40 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
+                    {
+                      orderDetails?.items?.map((itm) =>
+                        <tr>
+                          <td className='w-[10%] py-2 border-white border-2'>{itm.item_id}</td>
+                          <td className='w-[40%] py-2 border-white border-2'>{itm.name}</td>
+                          <td className='w-[10%] py-2 border-white border-2'>{itm.quantity}</td>
+                          <td className='w-[20%] py-2 border-white border-2'>{itm.unit_price}/-</td>
+                          <td className='w-[20%] py-2 border-white border-2'>{itm.total}/-</td>
+                        </tr>
+                      )
+                    }
                     <tr>
-                      <td className='w-[10%] py-2 border-white border-2'>item_id</td>
-                      <td className='w-[40%] py-2 border-white border-2'>item name</td>
-                      <td className='w-[10%] py-2 border-white border-2'>Quantity</td>
-                      <td className='w-[20%] py-2 border-white border-2'>unit_price</td>
-                      <td className='w-[20%] py-2 border-white border-2'>total</td>
+                      <td colSpan="3" rowSpan="3" className='w-[10%] py-2 border-white border-2'>
+                        <p className='font-bold'>Payment Method: <span className='text-xl font-semibold text-red-400'>{orderDetails.payment_method}</span></p>
+                        <p className='font-bold'>Delivary Person: <span className='font-normal'>{orderDetails?.delivery_person?.name}</span>, Phone: <span className='font-normal'>{orderDetails?.delivery_person?.phone}</span></p>
+                        <p className='font-bold'>Order Date: <span className='font-normal'>{orderDetails.ordered_at}</span></p>
+                        <p className='font-bold'>Delivary Date: <span className='font-normal'>{orderDetails.delivered_at}</span></p>
+
+                      </td>
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 bg-gray-100 font-bold uppercase'>Sub Total: </td>
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 text-xl font-semibold'>{orderDetails.subtotal}</td>
+                    </tr>
+                    <tr>
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 bg-gray-100 font-bold uppercase'>delivery fees: </td>
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 text-xl font-semibold'>{orderDetails.delivery_fee}</td>
+                    </tr>
+                    <tr>
+
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 bg-gray-100 font-bold uppercase'>total price: </td>
+                      <td className='w-[20%] py-2 border-white border-2 text-right px-3 text-xl font-semibold'>{orderDetails.total_price}</td>
                     </tr>
                   </tbody>
                 </table>
-
               </div>
-
-
-
             </div>
 
           </div>

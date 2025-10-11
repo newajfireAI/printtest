@@ -1,0 +1,54 @@
+@page {
+  /* চাইলে A4 enforce করতে পারেন */
+  /* size: A4; */
+  margin: 12mm;
+}
+
+@media print {
+  html, body {
+    height: auto !important;
+  }
+
+  /* সর্বত্র কালার ধরে রাখতে */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important; /* Firefox/modern */
+  }
+
+  /* fixed হলে paginate হয় না, তাই স্ট্যাটিক করে দিচ্ছি */
+  .fixed {
+    position: static !important;
+    inset: auto !important;
+  }
+
+  /* Flex centering প্রিন্টে সমস্যা করে, ব্লক করে দিন */
+  .print\\:block {
+    display: block !important;
+  }
+
+  /* টেবিল ব্রেকিং হিন্ট */
+  table,
+  thead,
+  tbody,
+  tfoot,
+  tr,
+  td,
+  th {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+}
+
+/* যেগুলোর ব্যাকগ্রাউন্ড নিশ্চিত রাখতে চান সেখানে এই ক্লাস ব্যবহার করুন */
+.force-bg {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}

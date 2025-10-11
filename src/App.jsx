@@ -4,6 +4,7 @@ import { IoPrintOutline } from 'react-icons/io5'
 import { MdDownload } from 'react-icons/md'
 import { LuView } from 'react-icons/lu'
 import jsPDF from 'jspdf'
+import html2canvas from "html2canvas";
 
 function App() {
   const [orderdata, setOrderData] = useState([])
@@ -30,45 +31,29 @@ function App() {
     setOrderDetails(OrderDatabyID);
 
   }
-  const handleDownload = () => {
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a5",
-  });
 
-  let y = 15;
-  doc.setFontSize(14);
-  doc.text("🍽 Spicy Grill - Orders", 20, y);
-  y += 10;
-
-  orderdata.forEach(order => {
-    doc.setFontSize(11);
-    doc.text(`Order ID: ${order.order_id}`, 20, y); y += 5;
-    doc.text(`Customer: ${order.customer.name}`, 20, y); y += 5;
-    doc.text(`Phone: ${order.customer.phone}`, 20, y); y += 5;
-    doc.text(`Items: ${order.items.map(itm => itm.name).join(', ')}`, 20, y);
-    y += 5;
-    doc.text(`Total: ${order.total_price} ৳`, 20, y);
-    y += 10;
-  });
-
-  doc.save("orders-invoice.pdf");
-};
+  const hendlePrintPage = (Id) => {
+    const dataByID = orderdata.find(o => o.order_id === Id);
+    setOrderDetails(dataByID);
+    setTimeout(() => window.print(), 100);
+  };
 
 
-
+  const handleDownload = async() => {
+    
+  };
 
 
   return (
     <>
       <section className='relative'>
-        <section className='w-[80%] mx-auto'>
+        <section className='w-[80%] mx-auto print:hidden'>
           <h1>Resturent Order Table</h1>
 
           <table className='border P-5 w-full border-gray-300'>
             <thead className='' >
               <tr className='bg-[#e9e8e8]'>
+                <th className='border p-2'>S/N</th>
                 <th className='border p-2'>Order Id</th>
                 <th className='border p-2'>Customer Name</th>
                 <th className='border p-2'>Customer Phone</th>
@@ -82,11 +67,12 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {orderdata.map((order) => {
+              {orderdata.map((order, idx) => {
                 order?.item?.map((itm) => setOrderItem(itm))
                 return (
-                  <tr>
-                    <td className='border p-2'>{order.order_id}</td>
+                  <tr key={idx}>
+                    <td className='border p-2 text-center'>{idx + 1}</td>
+                    <td className='border p-2 text-center'>{order.order_id}</td>
                     <td className='border p-2'>{order.customer.name}</td>
                     <td className='border p-2'>{order.customer.phone}</td>
                     <td className='border p-2'>{order.customer.address}</td>
@@ -95,10 +81,10 @@ function App() {
                         {itm.name}{idx !== order.items.length - 1 && ', '}
                       </span>
                     ))}</td>
-                    <td className='border p-2'>{order.total_price}</td>
+                    <td className='border p-2 text-right'>{order.total_price} /-</td>
                     <td className='border p-2'>{order.order_status}</td>
                     <td className='border p-2'><button onClick={() => henldeViewInvoice(order.order_id)} className='text-2xl text-center'><LuView /></button></td>
-                    <td className='border p-2'><button  className='text-2xl text-center'><IoPrintOutline /></button></td>
+                    <td className='border p-2'><button onClick={() => hendlePrintPage(order.order_id)} className='text-2xl text-center'><IoPrintOutline /></button></td>
                     <td className='border p-2'><button onClick={handleDownload} className='text-2xl text-center'><MdDownload /></button></td>
                   </tr>
                 )
@@ -108,13 +94,14 @@ function App() {
           </table>
 
         </section>
-        <section onClick={hendleClickOutSite} className={`bg-gray-300/50 w-screen h-screen absolute top-0 ${!hidden && 'hidden'}`}>
+        <section onClick={hendleClickOutSite} className={`bg-gray-300/50 w-screen h-screen fixed overflow-y-auto no-scrollbar print:overflow-visible print:static print:bg-white top-0 ${!hidden && 'hidden'} print:block`}>
 
-          <div ref={clieckref} className='w-[80%] hidden-[2480px] bg-white shadow mx-auto flex justify-center items-center p-10 my-10'>
+          <div id='print-area' ref={clieckref} className='w-[80%] print:w-full hidden-[2480px] bg-white shadow mx-auto flex justify-center items-center p-10 my-10 print:block print:shadow-none  print:min-h-0 print:m-0 print:p-0
+             print:rounded-none print:border-0'>
 
             {/*All Data  */}
             <div className='w-full'>
-              <h3 className="text-3xl font-bold text-center underline">Invoice</h3>
+              <h3 className="text-3xl font-bold text-center underline print:text-amber-500">Invoice</h3>
               <div className='flex items-center justify-between'>
                 <div className='flex gap-3'>
                   <div className='text-right'>
@@ -149,17 +136,17 @@ function App() {
               </div>
 
               <div>
-                <table className='w-full mt-5'>
-                  <thead>
-                    <tr className='bg-gray-300 border'>
-                      <th className='w-[10%] py-2 border-white border-2'>item_id</th>
-                      <th className='w-[40%] py-2 border-white border-2'>item name</th>
-                      <th className='w-[10%] py-2 border-white border-2'>Quantity</th>
-                      <th className='w-[20%] py-2 border-white border-2'>unit_price</th>
-                      <th className='w-[20%] py-2 border-white border-2'>total</th>
+                <table className='w-full mt-5 print:break-inside-auto'>
+                  <thead className="print:table-header-group">
+                    <tr className='bg-gray-300 border print:bg-amber-500'>
+                      <th className='w-[10%] py-2 border-2'>item_id</th>
+                      <th className='w-[40%] py-2 border-2'>item name</th>
+                      <th className='w-[10%] py-2 border-2'>Quantity</th>
+                      <th className='w-[20%] py-2 border-2'>unit_price</th>
+                      <th className='w-[20%] py-2 border-2'>total</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="print:table-row-group">
                     {
                       orderDetails?.items?.map((itm) =>
                         <tr>
